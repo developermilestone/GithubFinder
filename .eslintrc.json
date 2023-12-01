@@ -1,0 +1,42 @@
+{
+    "extends": ["next/core-web-vitals", "prettier", "eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["react", "@typescript-eslint", "testing-library"],
+    "rules": {
+        "indent": ["error", 4],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "object-curly-spacing": ["error", "always"],
+        "space-before-blocks": ["error", { "functions": "always", "keywords": "always", "classes": "always" }],
+        "no-multi-spaces": "error",
+        "@next/next/no-img-element": "off",
+        "@next/next/no-page-custom-font": "off",
+        "jsx-a11y/alt-text": "off",
+        "react/display-name": "off",
+        "react/no-children-prop": "off",
+        "react/jsx-indent-props": [2, 4],
+        "react/jsx-max-props-per-line": [1, { "when": "multiline" }],
+        "react/jsx-closing-bracket-location": [1, "tag-aligned"],
+        "@typescript-eslint/no-explicit-any": "off",
+        "react/react-in-jsx-scope": "off", // temporarily - too many errors
+        "@typescript-eslint/no-non-null-assertion": "off", // temporarily -- too many errors
+        "@typescript-eslint/ban-ts-comment": "off", // allot @ts-ignore
+        "@typescript-eslint/no-empty-function": "off", // allow () => {} - used in devias
+        "@typescript-eslint/ban-types": ["error", {"types":  {"{}": false}}]
+    },
+    "overrides": [
+        // Only uses Testing Library lint rules in test files
+        {
+            "files": [
+                "**/__tests__/**/*.[jt]s?(x)",
+                "**/?(*.)+(spec|test).[jt]s?(x)"
+            ],
+            "extends": ["plugin:testing-library/react"]
+        }
+    ]
+}
