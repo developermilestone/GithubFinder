@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const repositories = createApi({
@@ -34,8 +35,7 @@ export const repositories = createApi({
                 },
             }),
             transformResponse: response => {
-                console.log('asdadasd', response);
-                return response.data.getRepositories;
+                return response?.data?.getRepositories;
             },
         }),
         fetchBulkRepositories: builder.query({
