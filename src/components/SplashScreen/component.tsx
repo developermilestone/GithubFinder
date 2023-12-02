@@ -26,7 +26,7 @@ export const SplashScreen: FC = () => (
                 width: 48,
             }}
         >
-            <Logo />
+            Github Finder
         </Box>
     </Box>
 );
