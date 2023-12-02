@@ -45,7 +45,6 @@ interface Context {
   session: Session;
 }
 
-// Refactor the GraphQL fetch function for reusability
 async function fetchGitHubGraphQL(query: string, variables: { [key: string]: any }): Promise<GitHubResponse> {
   const response = await fetch(externalPath.githubApi, {
     method: 'POST',
@@ -60,15 +59,41 @@ async function fetchGitHubGraphQL(query: string, variables: { [key: string]: any
   return data;
 }
 
-// Reusable function to transform repository edges
 function transformRepositoryEdges(edges: Array<{ node: Repository }>): Array<Repository> {
   return edges.map(edge => ({
     ...edge.node,
-    languages: edge.node.languages.edges.map(langEdge => langEdge.node)
+    languages: {
+      edges: edge.node.languages.edges.map(langEdge => ({ node: langEdge.node }))
+    }
   }));
 }
 
-const repositoryQuery = `...`; // same as before
+const repositoryQuery = `
+  query search($query: String!) {
+    search(query: $query, type: REPOSITORY, first: 10) {
+      edges {
+        node {
+          ... on Repository {
+            id
+            name
+            description
+            nameWithOwner
+            url
+            languages (first: 1){
+              edges {
+                node {
+                  id
+                  name
+                  color
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const resolvers = {
   Query: {
