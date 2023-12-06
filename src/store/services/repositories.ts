@@ -1,110 +1,65 @@
-//@ts-nocheck
+
+import { ADD_FAVORITE_REPOSITORY_MUTATION, BULK_SEARCH_QUERY, REMOVE_FAVORITE_REPOSITORY_MUTATION, SEARCH_REPOSITORIES_QUERY } from '@/graphql/queries';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+const prepareHeaders = (headers: Headers): Headers => {
+  return headers;
+};
 
 export const repositories = createApi({
     reducerPath: 'repositoriesApi',
     baseQuery: fetchBaseQuery({
         baseUrl: '/api/graphql',
-        prepareHeaders: headers => {
-            return headers;
-        },
+        prepareHeaders,
     }),
     endpoints: builder => ({
         fetchRepositories: builder.query({
-            query: searchTerm => ({
-                url: '',
-                method: 'POST',
-                body: {
-                    query: `
-            query search($query: String!) {
-              getRepositories(query: $query) {
-                name
-                id
-                description
-                languages {
-                  color
-                  id
-                  name
-                }
-                nameWithOwner
-                url
-            }
-            }
-          `,
-                    variables: { query: `${searchTerm}` },
-                },
-            }),
-            transformResponse: response => {
-                return response?.data?.getRepositories;
+          query: ({ searchTerm, after, first }) => ({
+            url: '',
+            method: 'POST',
+            body: {
+              query: SEARCH_REPOSITORIES_QUERY,
+              variables: { query: searchTerm, first, after },
             },
+          }),
+          transformResponse: response => (response as { data: { getRepositories: any } })?.data?.getRepositories,
         }),
         fetchBulkRepositories: builder.query({
           query: searchTerm => ({
             url: '',
             method: 'POST',
             body: {
-                query: `
-        query search($query: String!) {
-          getBulkRepositories(query: $query) {
-            name
-            id
-            description
-            languages {
-              color
-              id
-              name
-            }
-            nameWithOwner
-            url
-            isFavorite
-            rating
-        }
-        }
-      `,
-                variables: { query: `${searchTerm}` },
+              query: BULK_SEARCH_QUERY,
+              variables: { query: searchTerm },
             },
+          }),
+          transformResponse: response => {return (response as { data: { getBulkRepositories: any } })?.data?.getBulkRepositories},
         }),
-        transformResponse: response => {
-            console.log('asdadasd', response);
-            return response.data.getBulkRepositories;
-        },
-    }),
         addFavoriteRepository: builder.mutation({
           query: (newRepository) => ({
-            url: '/',
+            url: '',
             method: 'POST',
             body: {
-              query: `
-                mutation AddFavoriteRepository($repositoryId: String!, $nameWithOwner: String!, $rating: Int!) {
-                  addFavoriteRepository(repositoryId: $repositoryId, nameWithOwner: $nameWithOwner, rating: $rating) {
-                    id
-                    repositoryId
-                    nameWithOwner
-                    rating
-                  }
-                }
-              `,
+              query: ADD_FAVORITE_REPOSITORY_MUTATION,
               variables: {repositoryId: newRepository.id, nameWithOwner: newRepository.nameWithOwner, rating: newRepository.rating},
             },
           }),
-      }),
-      removeFavoriteRepository: builder.mutation({
-        query: (repository) => ({
-          url: '/',
-          method: 'POST',
-          body: {
-            query: `
-              mutation RemoveFavoriteRepository($repositoryId: String!) {
-                removeFavoriteRepository(repositoryId: $repositoryId) {
-                  id
-                }
-              }
-            `,
-            variables: {repositoryId: repository.id},
-          },
         }),
-    }),
+        removeFavoriteRepository: builder.mutation({
+          query: (repository) => ({
+            url: '',
+            method: 'POST',
+            body: {
+              query: REMOVE_FAVORITE_REPOSITORY_MUTATION,
+              variables: { repositoryId: repository.id },
+            },
+          }),
+        }),
     }),
 });
 
-export const { useFetchRepositoriesQuery, useAddFavoriteRepositoryMutation, useRemoveFavoriteRepositoryMutation, useFetchBulkRepositoriesQuery } = repositories;
+export const {
+  useFetchRepositoriesQuery,
+  useAddFavoriteRepositoryMutation,
+  useRemoveFavoriteRepositoryMutation,
+  useFetchBulkRepositoriesQuery
+} = repositories;
