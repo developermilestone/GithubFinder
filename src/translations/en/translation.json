@@ -1,0 +1,21 @@
+{
+    "menu": {
+        "home": "Home",
+        "favorites": "Favorites",
+        "logout": "Logout"
+    },
+    "ratingModal":{
+        "cancel": "Cancel",
+        "add": "Add",
+        "title": "Rate the Repository"
+    },
+    "main_page":{
+        "search": {
+            "label": "Search for Repositories"
+        }
+    },
+    "favorites_page":{
+        "title": "My Favorites Repositories",
+        "empty": "You don't have any favorite repositories yet."
+    }
+}

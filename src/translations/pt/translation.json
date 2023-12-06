@@ -1,0 +1,21 @@
+{
+    "menu": {
+        "home": "Inicio",
+        "favorites": "Favoritos",
+        "logout": "Sair"
+    },
+    "ratingModal":{
+        "cancel": "Cancelar",
+        "add": "Adicionar",
+        "title": "Classifique este repositorio"
+    },
+    "main_page":{
+        "search": {
+            "label": "Procurar por repositorios"
+        }
+    },
+    "favorites_page":{
+        "title": "Os meus repositorios favoritos",
+        "empty": "Não tens nenhum repositorio favorito ainda."
+    }
+}
