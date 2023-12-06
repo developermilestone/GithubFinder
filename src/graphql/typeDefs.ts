@@ -1,6 +1,4 @@
 import gql from "graphql-tag";
-
-
 const typeDefs = gql`
 
     type ProgrammingLanguage {
@@ -16,16 +14,23 @@ const typeDefs = gql`
         description: String
         url: String!
         nameWithOwner: String!
-        languages: [ProgrammingLanguage!]
+        languages: [ProgrammingLanguage]
     }
-
+    type Response {
+        data: [Repository!]!
+        pagination: Pagination!
+    }
+    type Pagination {
+        hasNextPage: Boolean!
+        endCursor: String!
+    }
     type FavoriteRepository {
         id: ID!
         name: String!
         description: String
         url: String!
         nameWithOwner: String!
-        languages: [ProgrammingLanguage!]
+        languages: [ProgrammingLanguage]
         rating: Int!
         isFavorite: Boolean!
     }
@@ -41,7 +46,7 @@ const typeDefs = gql`
 
     type Query {
 
-        getRepositories(query: String): [Repository!]!
+        getRepositories(query: String, first: Int, after: String): Response!
 
         getBulkRepositories(query: String): [FavoriteRepository!]!
     }

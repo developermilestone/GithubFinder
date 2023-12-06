@@ -1,76 +1,89 @@
-import { externalPath } from "@/configs/paths";
-import prisma from "@/libs/prisma";
+import { externalPath } from '@/configs/paths';
+import prisma from '@/libs/prisma';
 
+interface RepositoryRequest {
+    id: string;
+    name: string;
+    description: string;
+    nameWithOwner: string;
+    url: string;
+    languages: {
+        edges: Array<{
+            node: Language;
+        }>;
+    };
+}
 interface Repository {
-  id: string;
-  name: string;
-  description: string;
-  nameWithOwner: string;
-  url: string;
-  languages: {
-    edges: Array<{
-      node: Language;
-    }>;
-  };
+    id: string;
+    name: string;
+    description: string;
+    nameWithOwner: string;
+    url: string;
+    languages: Language[];
 }
-
+export interface RepositoryResponse {
+    data: Repository[];
+    pagination: Pagination;
+}
 interface Language {
-  id: string;
-  name: string;
-  color: string;
+    id: string;
+    name: string;
+    color: string;
 }
-
+interface Pagination {
+    hasNextPage: boolean;
+    endCursor: string;
+}
 interface GitHubResponse {
-  search: {
-    edges: Array<{
-      node: Repository;
-    }>;
-  };
+    search: {
+        pageInfo: Pagination;
+        edges: Array<{
+            node: RepositoryRequest;
+        }>;
+    };
 }
 
 interface FavoriteRepository {
-  repositoryId: string;
-  nameWithOwner: string;
-  rating?: number;
-  userId: string;
+    repositoryId: string;
+    nameWithOwner: string;
+    rating?: number;
+    userId: string;
 }
 
 interface Session {
-  user: {
-    sub: string;
-  };
+    user: {
+        sub: string;
+    };
 }
 
 interface Context {
-  session: Session;
+    session: Session;
 }
 
 async function fetchGitHubGraphQL(query: string, variables: { [key: string]: any }): Promise<GitHubResponse> {
-  const response = await fetch(externalPath.githubApi, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query, variables }),
-  });
+    const response = await fetch(externalPath.githubApi, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query, variables }),
+    });
 
-  const { data } = await response.json();
-  return data;
+    const { data } = await response.json();
+    return data;
 }
 
-function transformRepositoryEdges(edges: Array<{ node: Repository }>): Array<Repository> {
-  return edges.map(edge => ({
-    ...edge.node,
-    languages: {
-      edges: edge.node.languages.edges.map(langEdge => ({ node: langEdge.node }))
-    }
-  }));
+function transformRepositoryEdges(edges: Array<{ node: RepositoryRequest }>): Array<Repository> {
+    return edges.map(edge => ({
+        ...edge.node,
+        languages: edge.node.languages.edges.map(langEdge => langEdge.node),
+    }));
 }
 
 const repositoryQuery = `
-  query search($query: String!) {
-    search(query: $query, type: REPOSITORY, first: 10) {
+  query search($query: String!, $first: Int, $after: String) {
+    search(query: $query, type: REPOSITORY, first: $first, after: $after) {
       edges {
         node {
           ... on Repository {
@@ -90,51 +103,73 @@ const repositoryQuery = `
             }
           }
         }
+      },
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
 `;
 
 export const resolvers = {
-  Query: {
-    getRepositories: async (_: any, { query }: { query: string }, { session }: Context) => {
-      const response = await fetchGitHubGraphQL(repositoryQuery, { query });
-      return transformRepositoryEdges(response.search.edges);
-    },
-    getBulkRepositories: async (_: any, {}: any, { session }: Context) => {
-      const favorites = await prisma.favoriteRepository.findMany({
-        where: { userId: session.user.sub },
-      });
+    Query: {
+        getRepositories: async (
+            _: any,
+            { query, first, after }: { query: string; first: number; after: string },
+            { session }: Context
+        ) => {
+            const response = await fetchGitHubGraphQL(repositoryQuery, { query, first, after });
 
-      const favoriteRepoQuery = favorites.map(favorite => `repo:${favorite.nameWithOwner}`).join(' ');
-      const response = await fetchGitHubGraphQL(repositoryQuery, { query: favoriteRepoQuery });
+            const repositories = transformRepositoryEdges(response.search.edges);
+            return { data: repositories, pagination: response.search.pageInfo };
+        },
+        getBulkRepositories: async (_: any, {}: any, { session }: Context) => {
+            const favorites = await prisma.favoriteRepository.findMany({
+                where: { userId: session.user.sub },
+            });
 
-      return response.search.edges.map(edge => {
-        const favorite = favorites.find(favorite => favorite.repositoryId === edge.node.id);
-        return ({
-          ...transformRepositoryEdges([edge])[0],
-          isFavorite: !!favorite,
-          rating: favorite?.rating,
-        });
-      });
+            if (!favorites.length) {
+                return [];
+            }
+            const favoriteRepoQuery = favorites.map(favorite => `repo:${favorite.nameWithOwner}`).join(' ');
+            const response = await fetchGitHubGraphQL(repositoryQuery, {
+                query: favoriteRepoQuery,
+                first: 100,
+                after: null,
+            });
+
+            return response.search.edges.map(edge => {
+                const favorite = favorites.find(favorite => favorite.repositoryId === edge.node.id);
+                return {
+                    ...transformRepositoryEdges([edge])[0],
+                    isFavorite: !!favorite,
+                    rating: favorite?.rating,
+                };
+            });
+        },
     },
-  },
-  Mutation: {
-    addFavoriteRepository: async (_: any, args: { repositoryId: string; nameWithOwner: string; rating: number }, context: Context) => {
-      const { repositoryId, nameWithOwner, rating } = args;
-      return prisma.favoriteRepository.create({
-        data: {
-          repositoryId,
-          nameWithOwner,
-          rating,
-          userId: context.session.user.sub
-        }
-      });
+    Mutation: {
+        addFavoriteRepository: async (
+            _: any,
+            args: { repositoryId: string; nameWithOwner: string; rating: number },
+            context: Context
+        ) => {
+            const { repositoryId, nameWithOwner, rating } = args;
+
+            return prisma.favoriteRepository.create({
+                data: {
+                    repositoryId,
+                    nameWithOwner,
+                    rating,
+                    userId: context.session.user.sub,
+                },
+            });
+        },
+        removeFavoriteRepository: async (_: any, { repositoryId }: { repositoryId: string }, context: Context) => {
+            return prisma.favoriteRepository.deleteMany({
+                where: { repositoryId, userId: context.session.user.sub },
+            });
+        },
     },
-    removeFavoriteRepository: async (_: any, { repositoryId }: { repositoryId: string }, context: Context) => {
-      return prisma.favoriteRepository.deleteMany({
-        where: { repositoryId, userId: context.session.user.sub },
-      });
-    }
-  }
 };
