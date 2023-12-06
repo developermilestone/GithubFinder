@@ -1,9 +1,9 @@
-import { Stack, Button } from "@mui/material";
+import { SearchBarContainer } from "@/components";
 
 export default function Home() {
   return (
     <main>
-     <p>Github Finder</p>
+      <SearchBarContainer />
     </main>
   )
 }
