@@ -5,3 +5,7 @@ export const auth0Config = {
   client_id: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
   issuer_base_url: process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_URL,
 };
+
+export const globalConfig = {
+    appName: "Github Finder"
+}
