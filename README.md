@@ -7,25 +7,30 @@
   - [Live Demo](#live-demo)
   - [Tech Stack](#tech-stack)
   - [Getting Started](#getting-started)
-  - [Detail Docmunentation](#detail-docmunentation)
+  - [Detail Documentation](#detail-documentation)
+    - [Database](#database)
     - [Authentication in Github Finder](#authentication-in-github-finder)
       - [Authentication Flow](#authentication-flow)
       - [Configuration](#configuration)
     - [Backend For Frontend (BFF)](#backend-for-frontend-bff)
     - [The Structure of the code](#the-structure-of-the-code)
     - [RTK Query](#rtk-query)
+  - [Solution Diagram](#solution-diagram)
+    - [Application](#application)
+    - [Components](#components)
 
 ## Overview
 
 Github Finder is my test built to search GitHub repositories and add them as favorites to my account.
 
 As part of the development, build a complete stack application, which has authentication, the implementation of API Gateway in GraphQL on the BE side, to interact with external services such as communication with the GitHub API or for the operation of internal services for store favorites lists. The application has Prisma ORM integration, making operating our database easier and storing the data safely.
-On the FE side, we rely on using MaterialUI as the project design base, the redux toolkit as our state manager, and internationalization with i18n.
+On the FE side, I rely on using MaterialUI as the project design base, the redux toolkit as our state manager, and internationalization with i18n.
 
 ## Live Demo
 https://github-finder-qihd.vercel.app/
 
-Create your own account to use the application.
+Try it ;)
+
 ## Tech Stack
 
 - Next.js with app router [docs](https://nextjs.org/docs)
@@ -39,6 +44,7 @@ Create your own account to use the application.
 - i18n
 - MaterialUI
 - Auth0
+- PostgreSQL
 
 ## Getting Started
 
@@ -53,11 +59,24 @@ To get started with Github Finder Project, follow these steps:
 4. **Start the Development Server**: Run `npm run dev` to start the development server.
 
 5. **Build the Project**: Run `npm run build` to start the development server.
+
 6. **Run test coverage**: Run `npm run test:coverage` to start the development server.
 
 7. **Explore**: You can visit the app on [localhost:3000](http://localhost:3000)
 
-## Detail Docmunentation
+## Detail Documentation
+
+### Database
+
+I'm using PostgreSQL database from Vercel to keep the favourites from user's accounts.
+
+To configure you need to add the following variable in your `.env` file
+
+```
+    POSTGRES_PRISMA_URL="postgres://default:1aEdGKFxwc3k@ep-nameless-wood-87509350-pooler.eu-central-1.postgres.vercel-storage.com:5432/verceldb?pgbouncer=true&connect_timeout=15"
+    POSTGRES_URL_NON_POOLING="postgres://default:1aEdGKFxwc3k@ep-nameless-wood-87509350.eu-central-1.postgres.vercel-storage.com:5432/verceldb"
+```
+
 
 ### Authentication in Github Finder
 
@@ -85,7 +104,7 @@ This header is automatically added to `GraphQl` requests.
 
 ### Backend For Frontend (BFF)
 
-We use the Next.js [route handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) to create a BFF as a middleman to call our backend APIs. The reasons we're using a BFF instead of directly calling the APIs is [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS). I used the BFF to set and run graphql server.
+I use the Next.js [route handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) to create a BFF as a middleman to call our backend APIs. The reasons I'm using a BFF instead of directly calling the APIs is [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), and used set and run graphql server as our API Gateway.
 
 ### The Structure of the code
 
@@ -122,3 +141,10 @@ We use the Next.js [route handler](https://nextjs.org/docs/app/building-your-app
 ### RTK Query
 
 In order to simplify API queries, a better alternative to [React Query](https://tanstack.com/query/v3/), i.e. [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) is being used to send async API queries to the backend APIs using Redux Thunks. It stores the data and the cache keys in Redux stores.
+
+
+## Solution Diagram
+
+### Application
+
+### Components
