@@ -9,11 +9,11 @@ import { RepoCard } from '..';
 import { InfiniteScroll } from '../InfiniteScroll';
 import { Repository } from '@/types';
 
-
 interface SearchBarComponentProps {
     favorites: any[];
     favoritesHandler: (isFavorite: boolean, repo: Repository) => void;
 }
+
 
 const SearchBarComponent: React.FC<SearchBarComponentProps> = ({ favorites, favoritesHandler }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');

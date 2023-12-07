@@ -6,25 +6,8 @@ import { Box, Button, Card, CardContent, Rating, Stack, Typography } from '@mui/
 import Link from 'next/link';
 import { useState } from 'react';
 import { RatingModal } from '../RatingModal';
+import { RepoCardProps } from '@/types';
 
-type Language = {
-  name: string;
-  color?: string;
-};
-
-type RepositoryInfo = {
-  name?: string;
-  url?: string;
-  rating?: number;
-  description?: string;
-  languages?: Language[];
-};
-
-type RepoCardProps = {
-  repositoryInfo: RepositoryInfo;
-  isFavorite: boolean;
-  handler: (isFavorite: boolean, repositoryInfo: RepositoryInfo) => void;
-};
 
 const RepoCard: React.FC<RepoCardProps> = ({ repositoryInfo, isFavorite, handler }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);

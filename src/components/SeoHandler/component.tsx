@@ -2,12 +2,12 @@ import { globalConfig } from '@/configs';
 import Head from 'next/head';
 import type { FC } from 'react';
 
-interface SeoProps {
+interface Props {
     title?: string;
 }
 
 
-const SeoComponent: FC<SeoProps> = props => {
+const SeoComponent: FC<Props> = props => {
     const { title } = props;
 
     const fullTitle = title ? title + ' | ' : '';

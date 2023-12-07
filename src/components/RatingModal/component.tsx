@@ -1,14 +1,8 @@
 "use client";
+import { RatingModalProps } from '@/types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Rating } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-// Define the type for the props
-interface RatingModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (rating: number) => void;
-}
 
 const RatingModal: React.FC<RatingModalProps> = ({ open, onClose, onSubmit }) => {
   const [rating, setRating] = useState<number>(0);

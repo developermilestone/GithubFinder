@@ -2,19 +2,7 @@
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RepoCard } from '..';
-
-type Language = {
-    name: string;
-    color?: string;
-};
-interface Repository {
-    name?: string;
-    url?: string;
-    rating?: number;
-    id?: string;
-    description?: string;
-    languages?: Language[];
-}
+import { Repository } from '@/types';
 
 interface Props {
     favorites: Repository[];

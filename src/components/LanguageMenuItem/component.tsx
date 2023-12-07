@@ -1,15 +1,10 @@
 import i18n from '@/i18n';
+import { LanguageSelector } from '@/types';
 import LanguageIcon from '@mui/icons-material/Language';
 import { Box, IconButton, Menu, MenuItem } from '@mui/material';
 import * as React from 'react';
 
-// Define a type for the language structure
-type Language = {
-  value: string;
-  label: string;
-};
-
-const languages: Language[] = [
+const languages: LanguageSelector[] = [
   {
     value: 'en',
     label: 'English',

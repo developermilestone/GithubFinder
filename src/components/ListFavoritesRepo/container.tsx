@@ -3,19 +3,8 @@ import { RootState } from '@/store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from 'redux';
 import ListFavoriteReposComponent from './component';
+import { Repository } from '@/types';
 
-type Language = {
-  name: string;
-  color?: string;
-};
-interface Repository {
-  name?: string;
-  url?: string;
-  rating?: number;
-  id?: string;
-  description?: string;
-  languages?: Language[];
-}
 
 const ListFavoriteReposContainer = () => {
   const dispatch: Dispatch<any> = useDispatch();

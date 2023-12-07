@@ -16,8 +16,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
 export default function Sidebar() {
     const { menuOpened } = useSelector(state => state.settings);
     const dispatch = useDispatch();
