@@ -146,5 +146,7 @@ In order to simplify API queries, a better alternative to [React Query](https://
 ## Solution Diagram
 
 ### Application
-
+![image](https://github.com/developermilestone/GithubFinder/assets/152653061/a3ee7ca5-5886-42c0-98f5-8cbf5b9e3ba7)
 ### Components
+![image](https://github.com/developermilestone/GithubFinder/assets/152653061/33e478f4-eb3a-41b5-aa37-9544d72fae39)
+
